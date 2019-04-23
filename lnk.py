@@ -30,7 +30,7 @@ import pylnk
 import argparse
 from datetime import datetime
 
-def create_lnk(name, target, mode, args, description, icon, is_dir = False):
+def create_lnk(name, target, mode, args, description, icon, workingDir, is_dir = False):
 
     # Add ".lnk" to the end of the link name if it's not there already
     if len(name) < 4 or name[-4:] != ".lnk":
@@ -51,7 +51,7 @@ def create_lnk(name, target, mode, args, description, icon, is_dir = False):
         icon = icon.replace("/", "\\").rstrip("\\")
 
     # Create pylnk object; populate drive info (null) and timestamps (now)
-    lnk = populate_lnk(name, target, mode, args, description, icon)
+    lnk = populate_lnk(name, target, mode, args, description, icon, workingDir)
     
     # Create a DriveEntry object for the target root
     levels = list(pylnk.path_levels("\\".join(target)))
@@ -79,7 +79,7 @@ def create_lnk(name, target, mode, args, description, icon, is_dir = False):
     
 # Create the pylnk object; fill in null drive info, created/modified/accessed
 # times, mode, arguments, description, icon, and path/working dir 
-def populate_lnk(name, target, mode, args, description, icon):
+def populate_lnk(name, target, mode, args, description, icon, workingDir):
     lnk = pylnk.create(name)
     lnk.specify_local_location("\\".join(target))
 
@@ -97,9 +97,16 @@ def populate_lnk(name, target, mode, args, description, icon):
         lnk.icon_index = 0
 
     lnk._link_info.local_base_path = target
-    working_dir = target
-    working_dir.pop()
-    lnk.working_dir = "{0}\\".format("\\".join(working_dir))
+    if workingDir is not None:
+        workingDir = workingDir.replace("/", "\\").rstrip("\\").split("\\")
+        lnk.working_dir = "{0}\\".format("\\".join(workingDir))
+        relative_path = target
+        relative_path.pop()
+        lnk.relative_path = "{0}\\".format("\\".join(relative_path))
+    else:
+        working_dir = target
+        working_dir.pop()
+        lnk.working_dir = "{0}\\".format("\\".join(working_dir))
     
     return lnk
 
@@ -135,9 +142,10 @@ def main():
     parser.add_argument('--mode', default='Minimized', const='Minimized', nargs='?', choices=['Maximized', 'Normal', 'Minimized'], help='Set the type of window mode for the lnk file, default: %(default)s)')
     parser.add_argument('--desc', action='store', dest='description', help='Description for the lnk file')
     parser.add_argument('-i', '--icon', action='store', dest='icon', help='Icon for the lnk file, e.g. c:/windows/system32/notepad.exe')
+    parser.add_argument('-w', '--working', action='store', dest='working', help='Specify the working directory, e.g. c:/users/public/')
     args = parser.parse_args()
 
-    return create_lnk(args.name, args.target, args.mode, args.arguments, args.description, args.icon, args.is_dir)
+    return create_lnk(args.name, args.target, args.mode, args.arguments, args.description, args.icon, args.working, args.is_dir)
 
 if __name__ == "__main__":
     sys.exit(main())
