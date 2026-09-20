@@ -2,7 +2,8 @@
 ___
 Repository used for creating lnk file for Windows. Can be used on Linux systems or Windows systems for the creation of the Windows lnk file.
 
-Requires Python 2 (pylnk does not support python 3)
+~~Requires Python 2 (pylnk does not support python 3)~~
+Now works with [pylnk3](https://github.com/strayge/pylnk)
 
 Examples:
 
@@ -35,4 +36,7 @@ python lnk.py output.lnk C:/Windows/System32/cmd.exe --desc "This is a descripti
 ### [Black Lantern Security](https://www.blacklanternsecurity.com)
 [Kerry Milan](https://github.com/kerrymilan)
 
-[Micheal Reski](https://github.com/aconite33) [@zeekzack](https://twitter.com/@zeekzack)
+[Micheal Reski](https://github.com/aconite33) 
+[@zeekzack](https://twitter.com/@zeekzack)
+# Updated to pylnk3
+[FunnyWhale](https://github.com/FunnyWhaleDev)
